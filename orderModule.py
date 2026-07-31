@@ -17,7 +17,7 @@ def view_foods():
     for row in cursor.fetchall():
           print(f"Food Name: {row['foodname']}, Price: {row['foodprice']}")
 
-view_foods()
+#view_foods()
 
 
 def order_food(foodname, quantity):
@@ -41,8 +41,6 @@ def order_food(foodname, quantity):
     print(f"Order placed for {quantity} of {foodname}.")
     print("Total Price is ", totalprice)
 
-namef = input("Enter Name of food: ")
-q = int(input("Enter quantity of food: "))
-order_food(namef, q)
+
 
      
