@@ -1,12 +1,24 @@
 import pymysql as p 
 import qrcodeModule as q
-
+import sampleReport as sr
+import datetime
 #establishing connection to the database
 conn = p.connect(host='localhost', user='root', 
                  password='1240', database='restaurantDB',
                  port=3306,
                  cursorclass=p.cursors.DictCursor)
 
+def get_current_date():
+    # Get the current date and time
+    now = datetime.datetime.now()
+    
+    # Formated as "DD_MM_YYYY_HH_MM_SS"
+    # %H = Hour (24-hour clock)
+    # %M = Minute
+    # %S = Second
+    formatted_date = now.strftime("%d_%m_%Y_%H_%M_%S")
+    
+    return formatted_date
 
 def view_foods():
         #establishing connection to the database
@@ -42,6 +54,11 @@ def order_food(foodname, quantity):
     cursor.execute(transSQL,(quantity, foodID, customerID,token))
     conn.commit()
 
+    #getting balance remaining of customer
+    balanceSQL = "SELECT balance FROM customer WHERE customerID = %s;"
+    cursor.execute(balanceSQL, (customerID))
+    balance_remaining = cursor.fetchone()['balance']
+
     #print token to qr code
     q.print_token_toQRcode(token)
 
@@ -53,11 +70,14 @@ def order_food(foodname, quantity):
     print(f"Order placed for {quantity} of {foodname}.")
     print("Total Price is ", totalprice)
 
+    #create transaction report
+    customer_name = f"{user} {user2}"
+    
+    sr.create_transaction_report(f"transaction_report_{get_current_date()}.pdf",
+                                  token, quantity, 
+                                 foodname, price, totalprice, 
+                                 balance_remaining, customer_name)
 
 
-view_foods()
-fname = input('Enter name of food: ')
-fprice = int(input('Enter price of one food: '))
-order_food(fname, fprice)
 
 #qr code for your token is

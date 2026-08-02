@@ -28,5 +28,5 @@ def register_user( ):
     cs.execute(q1, (fname,lname, hashedPassword, bill))
     con.commit()
     cs.close()
-register_user()
+#register_user()
 con.close()
